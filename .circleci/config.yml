@@ -111,7 +111,7 @@ jobs:
       - run:
           name: Front-end Scan
           command: |
-            cd backend/
+            cd frontend/
             npm audit --audit-level=critical --force
       - save_cache:
           paths: [backend/node_modules]
