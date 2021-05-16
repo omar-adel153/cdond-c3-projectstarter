@@ -112,10 +112,13 @@ jobs:
           name: Front-end Scan
           command: |
             cd frontend/
-            npm audit --audit-level=critical --force
+            npm audit --audit-level=critical --force 2> /tmp/ScanOutput.log
       - save_cache:
-          paths: [backend/node_modules]
+          paths: [frontend/node_modules]
           key: frontend-build
+      - store_artifacts:
+          path: /tmp/ScanOutput.log
+          destination: frontendScanOutput.log
 
   scan-backend:
     docker:
@@ -128,10 +131,13 @@ jobs:
           name: Backend-end Scan
           command: |
             cd backend/
-            npm audit --audit-level=critical --force
+            npm audit --audit-level=critical --force 2> /tmp/ScanOutput.log
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - store_artifacts:
+          path: /tmp/ScanOutput.log
+          destination: backendScanOutput.log
             
 
 workflows:
