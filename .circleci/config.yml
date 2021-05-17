@@ -78,6 +78,7 @@ jobs:
           name: Front-end test
           command: |
             cd frontend/
+            npm audit fix
             npm run test
       - save_cache:
           paths: [frontend/node_modules]
@@ -94,6 +95,7 @@ jobs:
           name: Backend-end test
           command: |
             cd backend/
+            npm audit fix
             npm run test
       - save_cache:
           paths: [backend/node_modules]
@@ -110,7 +112,7 @@ jobs:
           name: Front-end Scan
           command: |
             cd frontend/
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -129,7 +131,7 @@ jobs:
           name: Backend-end Scan
           command: |
             cd backend/
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
