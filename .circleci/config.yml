@@ -145,6 +145,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install tar to avoid issues with presisting to workspace
+          command: |
+            yum install -y tar
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
