@@ -138,6 +138,41 @@ jobs:
       - store_artifacts:
           path: /tmp/ScanOutput.log
           destination: backendScanOutput.log
+
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project=project-ysu8kuky5ec7nc49r \
+              --stack-name "backend-ysu8kuky5ec7nc49r" \
+              --parameter-overrides ID="ysu8kuky5ec7nc49r"
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --tags project=project-ysu8kuky5ec7nc49r \
+              --stack-name "frontend-ysu8kuky5ec7nc49r" \
+              --parameter-overrides ID="ysu8kuky5ec7nc49r"  
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+              --filters Name=backend-ysu8kuky5ec7nc49r
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text >> .circleci/ansible/inventory.txt
+            exit 1
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure  
             
 
 workflows:
@@ -153,3 +188,8 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [test-feature-branch]
