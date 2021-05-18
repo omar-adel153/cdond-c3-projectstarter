@@ -190,9 +190,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt -y update
-            apt -y install jq tar gzip git curl
-            apk add --update ansible
+            apk add --update jq ansible tar gzip curl
 
       - attach_workspace:
           at: ~/
@@ -218,6 +216,6 @@ workflows:
       - scan-frontend:
           requires: [build-frontend]
       - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [build-frontend, build-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
