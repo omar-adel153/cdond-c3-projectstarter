@@ -145,9 +145,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install tar to avoid issues with presisting to workspace
+          name: Install persist to workspace requirements.
           command: |
             yum install -y tar
+            yum install -y gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
