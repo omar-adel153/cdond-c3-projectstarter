@@ -16,13 +16,13 @@
     status: present
 
 - name: "install npm"
-  become: yes
+  become: true
   apt:
     name: npm
     status: present
 
 - name: "install pm2"
-  become: yes
+  become: true
   npm:
     name: pm2
     state: present
