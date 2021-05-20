@@ -4,10 +4,19 @@
   apt:
     update_cache: yes
 
-- name: "upgrade packages"
+- name: "upgrade packages and set environment variables"
   become: yes
   apt:
     upgrade: yes
+  environment:
+    ENVIRONMENT: 'production'
+    TYPEORM_CONNECTION: 'postgres'
+    TYPEORM_ENTITIES: './src/modules/domain/**/*.entity.ts'
+    TYPEORM_HOST: 'database-1.cu2h5ixhgjsu.us-east-1.rds.amazonaws.com'
+    TYPEORM_PORT: '5432'
+    TYPEORM_USERNAME: 'postgres'
+    TYPEORM_PASSWORD: 'VMware1!'
+    TYPEORM_DATABASE: 'database-1'
 
 - name: "install node js"
   become: yes
