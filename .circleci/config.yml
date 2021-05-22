@@ -259,6 +259,26 @@ jobs:
             npm run build
             aws s3 cp --recursive ./dist s3://udapeople-ysu8kuky5ec7nc49r/
       # Here's where you will add some code to rollback on failure 
+
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "6c:4a:11:89:73:60:c3:43:88:6b:e3:fc:e8:a7:b1:08"
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update jq ansible tar gzip curl
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Deploy backend
+          command: |
+            exit 1
+      # Here's where you will add some code to rollback on failure  
             
 
 workflows:
@@ -282,4 +302,6 @@ workflows:
       - run-migrations:
           requires: [configure-infrastructure]
       - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
           requires: [run-migrations]
