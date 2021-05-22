@@ -274,10 +274,13 @@ jobs:
             apk add --update jq ansible tar gzip curl
       - attach_workspace:
           at: ~/
+      - restore_cache:
+          keys: [frontend-build]
       - run:
           name: Deploy backend
           command: |
-            exit 1
+            ls -lthr ./backend
+            cat .circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure  
             
 
@@ -286,17 +289,17 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       - deploy-infrastructure:
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          requires: [build-frontend, build-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          # requires: [build-frontend, build-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
