@@ -2,7 +2,7 @@ version: 2.1
 
 
 orbs:
-  aws-cli: circleci/aws-cli@1.18.69
+  aws-cli: circleci/aws-cli@1.3.0
 
 commands:
   destroy-environment:
