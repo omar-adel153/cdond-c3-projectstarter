@@ -216,11 +216,13 @@ jobs:
             npm run migrations > migrationsoutput.txt
             cat migrationsoutput.txt
 
-      # - run:
-      #     name: Send migration results to memstash
-      #     command: |
-      #       # Your code here
-      #       exit 1
+      - run:
+          name: Send migration results to memstash
+          command: |
+            cd backend
+            if grep "has been executed successfully" migrationsoutput.txt; then
+              curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request PUT --data "1" https://api.memstash.io/values/udapeople
+            fi
      # Here's where you will add some code to rollback on failure      
 
 
@@ -255,17 +257,16 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      - deploy-infrastructure:
-          #requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      - test-frontend:
           requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
