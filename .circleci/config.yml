@@ -322,9 +322,9 @@ jobs:
             API_URL=$(curl -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request GET https://api.memstash.io/values/API_URL)
             if curl -s ${API_URL} | grep "ok"
             then
-              exit 0
+              return 0
             else
-              exit 1
+              return 1
             fi
       - run:
           name: Frontend smoke test.
@@ -332,9 +332,9 @@ jobs:
             FRONTEND_URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website.us-west-2.amazonaws.com/#/"
             if curl -s ${FRONTEND_URL} | grep "Welcome"
             then
-              exit 1
+              return 1
             else
-              exit 0
+              return 0
             fi            
       # Here's where you will add some code to rollback on failure  
 
