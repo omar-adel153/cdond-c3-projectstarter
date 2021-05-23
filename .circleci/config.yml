@@ -317,22 +317,22 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-          if curl -s ${API_URL} | grep "ok"
-          then
-            return 0
-          else
-            return 1
-          fi
+            if curl -s ${API_URL} | grep "ok"
+            then
+              return 0
+            else
+              return 1
+            fi
       - run:
           name: Frontend smoke test.
           command: |
-          FRONTEND_URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website.us-west-2.amazonaws.com/#/"
-          if curl -s ${FRONTEND_URL} | grep "Welcome"
-          then
-            return 0
-          else
-            return 1
-          fi            
+            FRONTEND_URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website.us-west-2.amazonaws.com/#/"
+            if curl -s ${FRONTEND_URL} | grep "Welcome"
+            then
+              return 1
+            else
+              return 0
+            fi            
       # Here's where you will add some code to rollback on failure  
 
 workflows:
