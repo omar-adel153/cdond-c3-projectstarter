@@ -297,6 +297,43 @@ jobs:
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
             
+  smoke-test:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y curl
+      - run:
+          name: Get backend url
+          command: |
+            BACKEND_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-ysu8kuky5ec7nc49r" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
+            export API_URL="http://${BACKEND_IP}:3030/api/status"
+      - run:
+          name: Backend smoke test.
+          command: |
+          if curl -s ${API_URL} | grep "ok"
+          then
+            return 0
+          else
+            return 1
+          fi
+      - run:
+          name: Frontend smoke test.
+          command: |
+          FRONTEND_URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website.us-west-2.amazonaws.com/#/"
+          if curl -s ${FRONTEND_URL} | grep "Welcome"
+          then
+            return 0
+          else
+            return 1
+          fi            
+      # Here's where you will add some code to rollback on failure  
 
 workflows:
   default:
@@ -322,3 +359,5 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
