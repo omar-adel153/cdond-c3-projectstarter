@@ -17,9 +17,9 @@ commands:
             aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID}/ \
              --recursive
             aws cloudformation delete-stack \
-              --stack-name "backend-ysu8kuky5ec7nc49r"
+              --stack-name "backend-${CIRCLE_WORKFLOW_ID}"
             aws cloudformation delete-stack \
-              --stack-name "frontend-ysu8kuky5ec7nc49r"
+              --stack-name "frontend-${CIRCLE_WORKFLOW_ID}"
 
 
   revert-migrations:
@@ -163,22 +163,22 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=project-ysu8kuky5ec7nc49r \
-              --stack-name "backend-ysu8kuky5ec7nc49r" \
-              --parameter-overrides ID="ysu8kuky5ec7nc49r"
+              --tags project=project-${CIRCLE_WORKFLOW_ID} \
+              --stack-name "backend-${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project=project-ysu8kuky5ec7nc49r \
-              --stack-name "frontend-ysu8kuky5ec7nc49r" \
-              --parameter-overrides ID="ysu8kuky5ec7nc49r"  
+              --tags project=project-${CIRCLE_WORKFLOW_ID} \
+              --stack-name "frontend-${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
       - run:
           name: Add back-end ip to ansible inventory
           command: |
             aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-ysu8kuky5ec7nc49r" \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/project/.circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
@@ -231,7 +231,7 @@ jobs:
           command: |
             cd backend
             if grep -q "has been executed successfully" migrationsoutput.txt; then
-              curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request PUT --data "1" https://api.memstash.io/values/migration_ysu8kuky5ec7nc49r
+              curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
             fi
      # Here's where you will add some code to rollback on failure      
 
@@ -253,7 +253,7 @@ jobs:
           name: Get backend url
           command: |
             BACKEND_IP=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-ysu8kuky5ec7nc49r" \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             export API_URL="http://${BACKEND_IP}:3030"
@@ -263,7 +263,7 @@ jobs:
           command: |
             cd frontend
             npm run build
-            aws s3 cp --recursive ./dist s3://udapeople-ysu8kuky5ec7nc49r/
+            aws s3 cp --recursive ./dist s3://udapeople-${CIRCLE_WORKFLOW_ID}/
       # Here's where you will add some code to rollback on failure 
 
   deploy-backend:
@@ -312,7 +312,7 @@ jobs:
           name: Get backend url
           command: |
             BACKEND_IP=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=backend-ysu8kuky5ec7nc49r" \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request PUT --data "http://${BACKEND_IP}:3030/api/status" https://api.memstash.io/values/API_URL
@@ -329,6 +329,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
+            echo 
             FRONTEND_URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website.us-west-2.amazonaws.com/#/"
             if curl -s ${FRONTEND_URL} | grep "Welcome"
             then
