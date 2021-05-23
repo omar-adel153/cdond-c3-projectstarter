@@ -2,16 +2,12 @@
 - name: Copy files from backend
   become: true
   copy:
-    src: /home/backend.tar.gz
-    dest: /home/ubuntu/backend.tar.gz
+    src: ~/project/backend/
+    dest: /home/ubuntu/backend/
 
 - name: Start PM2
   shell: |
-    cd /home/ubuntu/
-    tar xzvf backend.tar.gz
-    mv home/circleci/project/backend .
-    cd backend/dist
-    sudo npm install -g npm@latest
-    sudo npm install -g webpack-dev-server
-    sudo npm install
-    sudo pm2 start main.js
+    cd /home/ubuntu/backend/
+    npm install
+    npm build
+    pm2 start npm -- run "start"
