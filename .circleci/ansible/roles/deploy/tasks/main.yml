@@ -8,6 +8,6 @@
 - name: Start PM2
   shell: |
     cd /home/ubuntu/backend/
-    npm install
-    npm build
-    pm2 start npm -- run "start"
+    sudo npm install
+    sudo npm build
+    sudo pm2 start npm -- run "start"
