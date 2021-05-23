@@ -315,11 +315,11 @@ jobs:
               --filters "Name=tag:Name,Values=backend-ysu8kuky5ec7nc49r" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
-            export API_URL="http://${BACKEND_IP}:3030/api/status"
+            curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request PUT --data "http://${BACKEND_IP}:3030/api/status" https://api.memstash.io/values/API_URL
       - run:
           name: Backend smoke test.
           command: |
-            echo ${API_URL}
+            API_URL=$(curl -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request GET https://api.memstash.io/values/API_URL)
             if curl -s ${API_URL} | grep "ok"
             then
               exit 0
