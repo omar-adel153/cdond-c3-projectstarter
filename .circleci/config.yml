@@ -349,11 +349,7 @@ jobs:
             yum install -y curl
       - run:
           name: Update cloudfront distribution
-          command: |
-            curl -H "Content-Type: text/plain" \
-              -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" \
-              --request PUT --data $OldWorkflowID https://api.memstash.io/values/old_workflow_id_${CIRCLE_WORKFLOW_ID}
-              
+          command: |              
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name "CICD-cloudfront" \
