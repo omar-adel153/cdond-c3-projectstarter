@@ -350,6 +350,12 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |              
+            export OldWorkflowID=$(aws cloudformation list-exports \
+              --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+
+            curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request PUT --data "${OldWorkflowID}" https://api.memstash.io/values/old_ID
+
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name "CICD-cloudfront" \
@@ -373,9 +379,7 @@ jobs:
         - run:
             name: Remove old stacks and files
             command: |
-              export OldWorkflowID=$(aws cloudformation list-exports \
-                --query "Exports[?Name==\`WorkflowID\`].Value" \
-                --no-paginate --output text)            
+              export OldWorkflowID=$(curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request GET https://api.memstash.io/values/old_ID)            
 
               echo Old workflow ID: "${OldWorkflowID}"
 
