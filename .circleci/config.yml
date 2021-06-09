@@ -80,7 +80,6 @@ jobs:
           name: Front-end test
           command: |
             cd frontend/
-            npm audit fix
             npm run test
       - save_cache:
           paths: [frontend/node_modules]
@@ -97,7 +96,6 @@ jobs:
           name: Backend-end test
           command: |
             cd backend/
-            npm audit fix
             npm run test
       - save_cache:
           paths: [backend/node_modules]
