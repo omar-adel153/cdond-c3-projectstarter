@@ -249,9 +249,11 @@ jobs:
               --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            curl -H "Content-Type: text/plain" -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request PUT --data "${API_URL}" https://api.memstash.io/values/API_URL
       - run:
           name: Deploy frontend objects
           command: |
+            export API_URL=$(curl -s -H "token: 3ef621ce-4522-44f3-96ae-696a368afb3b" --request GET https://api.memstash.io/values/API_URL)
             cd frontend
             echo "${API_URL}"
             npm run build
