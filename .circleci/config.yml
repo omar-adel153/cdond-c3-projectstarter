@@ -52,7 +52,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build
+          key: frontend-modules
 
   build-backend:
     docker:
@@ -75,7 +75,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-modules]
       - run:
           name: Front-end test
           command: |
@@ -84,7 +84,7 @@ jobs:
             npm run test
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build
+          key: frontend-modules
                 
   test-backend:
     docker:
@@ -108,7 +108,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-modules]
       - run:
           name: Front-end Scan
           command: |
@@ -116,7 +116,7 @@ jobs:
             npm audit fix --audit-level=critical 
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build
+          key: frontend-modules
       - store_artifacts:
           path: /tmp/ScanOutput.log
           destination: frontendScanOutput.log
@@ -234,7 +234,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-modules]
       - aws-cli/setup
       # - run:
       #     name: Install dependencies
